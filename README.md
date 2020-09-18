@@ -1,0 +1,2 @@
+# autoimagemorphjs
+Automatic image morphing
