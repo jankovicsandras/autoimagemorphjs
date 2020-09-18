@@ -21,12 +21,12 @@ This program expects two JSON-like arrays as command line arguments. The arrays 
 
 ```[output_filename_prefix,framerate,feature_grid_width,feature_grid_height,subpixel_processing,png_opts]```
 
- ```output_filename_prefix``` : REQUIRED string with single quotes ```'```
- ```framerate``` : optional integer, default = 30
- ```feature_grid_width``` : optional integer, default = 6
- ```feature_grid_height``` : optional integer, default = 6
- ```subpixel_processing``` : optional integer, default = 2
- ```png_opts``` : optional object, see https://github.com/lukeapage/pngjs
+ - ```output_filename_prefix``` : REQUIRED string with single quotes ```'```
+ - ```framerate``` : optional integer, default = 30
+ - ```feature_grid_width``` : optional integer, default = 6
+ - ```feature_grid_height``` : optional integer, default = 6
+ - ```subpixel_processing``` : optional integer, default = 2
+ - ```png_opts``` : optional object, see https://github.com/lukeapage/pngjs
  
 ## Example
 
