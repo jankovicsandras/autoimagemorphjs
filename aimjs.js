@@ -156,21 +156,23 @@ function anim( keyframefilenames, outfileprefix, framerate, featuregridwidth, fe
         fpts[i%2] = getfeaturepoints( inpngs[i%2], featuregridwidth, featuregridheight );
         // loop to render interframes
         for(var j=0; j<framerate; j++){
+			var starttime = Date.now();
             getframe( inpngs[(i-1)%2], inpngs[i%2], outpng,fpts[(i-1)%2], fpts[i%2], j/framerate, subpixel );
             filename = outfileprefix + ((i-1)*framerate+j) + '.png';
             savepng( filename, outpng, pngopts );
-            console.log( filename + ' saved.' );
+            console.log( filename + ' saved. '+(Date.now()-starttime)+' s' );
         }
     }
 }// End of anim()
 
 // command line interface
-var helptext = ' autoimagemorphjs / aimjs : Automatic image morphing\r\n András Jankovics, 2020, andras@jankovics.net\r\n https://github.com/jankovicsandras/\r\n License: Public Domain / https://unlicense.org/ \r\n\r\n Usage: this program expects two JSON-like arrays as command line arguments. The arrays can\'t have spaces or other whitespace characters and use single quotes \' , not double quotes ". The first array is a list of filename strings, the input keyframe images. The second array is a list of options:\r\n\r\n    [output_filename_prefix,framerate,feature_grid_width,feature_grid_height,subpixel_processing,png_opts]\r\n\r\n output_filename_prefix : REQUIRED string with single quotes \'\r\n framerate : optional integer, default = 30\r\n feature_grid_width : optional integer, default = 6\r\n feature_grid_height : optional integer, default = 6\r\n subpixel_processing : optional integer, default = 2\r\n png_opts : optional object, see https://github.com/lukeapage/pngjs \r\n\r\n Example:\r\n\r\n    node aimjs [\'vg0.png\',\'vg30.png\',\'vg60.png\',\'vg0.png\'] [\'f\',30,6,6,2]\r\n\r\n NOTE: no spaces in the two input JSON arrays. Use single quotes \'. WARNING: this will overwrite <output_filename_prefix><sequencenumber>.png files without warning! In this example, f0.png , f1.png, ... f89.png will be overwritten.\r\n\r\n Recommended postprocessing: get FFmpeg from https://ffmpeg.org/\r\n\r\n    ffmpeg -framerate 30 -i f%d.png f.gif';
-try{ if(process.argv.length<3){ console.log(helptext); process.exit(); }
-    var kfs = JSON.parse(process.argv[2].trim().split('\'').join('"')); if(!kfs instanceof Array){ console.log('ERROR with keyframes input \r\n\r\n'+process.argv[2]+'\r\n\r\n'+helptext); process.exit(1); }
-    var ops = JSON.parse(process.argv[3].trim().split('\'').join('"')); if(!ops instanceof Array){ console.log('ERROR with options input \r\n\r\n'+process.argv[3]+'\r\n\r\n'+helptext); process.exit(1); }
-    ops[1] = ops[1] || 30; ops[2] = ops[2] || 6; ops[3] = ops[3] || 6; ops[4] = ops[4] || 2; ops[5] = ops[5] || {};
-    anim(kfs, ops[0], ops[1], ops[2], ops[3], ops[4], ops[5] );
+var helptext = '\r\n\r\n autoimagemorphjs / aimjs : Automatic image morphing\r\n András Jankovics, 2020, andras@jankovics.net\r\n https://github.com/jankovicsandras/\r\n License: Public Domain / https://unlicense.org/ \r\n\r\n Usage: \r\n\r\n     node aimjs -i vg0.png vg30.png -o f\r\n\r\n this generates f*.pngs with defaults\r\n\r\n     node aimjs -i vg0.png vg30.png vg60.png vg0.png -o f_ -f 15 -w 3 -h 3\r\n\r\n this generates 3 x 15 f_*.pngs with 3 x 3 grid\r\n\r\n Options\r\n -i : REQUIRED flag to begin input filename list \r\n -o : REQUIRED flag to specify output filename prefix\r\n -f : framerate, optional integer, default = 30\r\n -w : feature grid width, optional integer, default = 6\r\n -h : feature grid height, optional integer, default = 6\r\n -sp : subpixel processing, optional float, default = Math.SQRT2\r\n -pngopts : optional object, see https://github.com/lukeapage/pngjs \r\n\r\n WARNING: this will overwrite <output_filename_prefix><sequencenumber>.png files without warning! In this example, f0.png , f1.png, ... f89.png will be overwritten.\r\n\r\n Recommended postprocessing: get FFmpeg from https://ffmpeg.org/\r\n\r\n    ffmpeg -framerate 30 -i f%d.png f.gif\r\n\r\n';
+
+try{ 
+	if(process.argv.length<3){ console.log(helptext); process.exit(); }
+	var o = { '-i':[], '-o':[], '-f':['30'], '-w':['6'], '-h':['6'], '-sp':[(''+Math.SQRT2)], '-pngopts':['{}'] }, k = '-i';
+	for(var i=2; i<process.argv.length; i++){ if(o.hasOwnProperty(process.argv[i])){ k = process.argv[i]; }else{ o[k].unshift(process.argv[i]); } }
+    anim(o['-i'].reverse(), o['-o'][0], parseInt(o['-f'][0]), parseInt(o['-w'][0]), parseInt(o['-h'][0]), parseFloat(o['-sp'][0]), JSON.parse(o['-pngopts'][0]) );
 }catch(ex){ console.log(ex+'\r\n\r\n--------------------------------\r\n\r\n'+helptext+'\r\n\r\n--------------------------------\r\n\r\n'+ex.stack); }
 
 //anim( ['f0.png','f30.png','f60.png','f90.png','f120.png','f150.png','f0.png'], 'f', 30, 6, 6, 2 );

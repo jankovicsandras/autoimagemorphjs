@@ -3,7 +3,7 @@
 
 # autoimagemorphjs / aimjs : Automatic image morphing
 
-### Version 0.1.0
+### Version 0.2.0
 ### This is a Node.js command line application (for now).
 #### This is a work in progress. Expect major refactoring, where the core functions will be split to a platform-independent JavaScript file (to target the browser) and a separate Node.js PNG I/O and command line parsing program. 
 
@@ -17,40 +17,33 @@ I recommend downloading to the same folder or editing Line 4 in ```aimjs.js``` :
 
 ## Usage
 
-This program expects two JSON-like arrays as command line arguments. The arrays can't have spaces or other whitespace characters and use single quotes ```'``` , not double quotes ```"```. The first array is a list of filename strings, the input keyframe images. The second array is a list of options:
+```node aimjs -i vg0.png vg30.png -o f```
 
-```[output_filename_prefix,framerate,feature_grid_width,feature_grid_height,subpixel_processing,png_opts]```
+This generates f*.pngs with defaults.
 
- - ```output_filename_prefix``` : REQUIRED string with single quotes ```'```
- - ```framerate``` : optional integer, default = 30
- - ```feature_grid_width``` : optional integer, default = 6
- - ```feature_grid_height``` : optional integer, default = 6
- - ```subpixel_processing``` : optional integer, default = 2
- - ```png_opts``` : optional object, see https://github.com/lukeapage/pngjs
- 
-## Example
+```node aimjs -i vg0.png vg30.png vg60.png vg0.png -o f_ -f 15 -w 3 -h 3```
 
-```node aimjs ['vg0.png','vg30.png','vg60.png','vg0.png'] ['f',30,6,6,2]```
-
-Expected output:
-
-```
-f0.png saved.
-f1.png saved.
-f2.png saved.
-f3.png saved.
-...
-```
-----
+This generates 3 x 15 f_*.pngs with 3 x 3 grid.
 
 ```node aimjs```
 
 Prints help.
 
+## Options
+
+ - ```-i``` : REQUIRED flag to begin input filename list
+ - ```-o``` : REQUIRED flag to specify output filename prefix
+ - ```-f``` : framerate, optional integer, default = 30
+ - ```-w``` : feature grid width, optional integer, default = 6
+ - ```-h``` : feature grid height, optional integer, default = 6
+ - ```-sp``` : subpixel processing, optional float, default = Math.SQRT2
+ - ```-pngopts``` : optional object, see https://github.com/lukeapage/pngjs 
+
 ## Warning
-Be careful when using the required ```output_filename_prefix``` parameter.  The program overwrites ```<output_filename_prefix><sequencenumber>.png``` files without warning. ```f0.png``` , ```f1.png```, ... ```f89.png``` will be overwritten in the example above.
+Be careful when using the required ```-o``` output filename prefix parameter.  The program overwrites ```<output_filename_prefix><sequencenumber>.png``` files without warning. ```f0.png``` , ```f1.png```, ...  will be overwritten in the example above.
 
 ### Recommended postprocessing
+
 Install FFmpeg:  https://ffmpeg.org/
 
 ```ffmpeg -framerate 30 -i f%d.png f.gif```
